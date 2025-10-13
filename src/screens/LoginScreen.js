@@ -15,7 +15,7 @@ export default function LoginScreen({ navigation }) {
         <InputField label="Email" keyboardType="email-address" autoCapitalize="none" />
         <InputField label="Password" secureTextEntry />
 
-        <PrimaryButton title="Sign in" onPress={() => navigation.replace('Home')} style={{ marginTop: 8 }} />
+        <PrimaryButton title="Sign in" onPress={() => navigation.replace('Main')} style={{ marginTop: 8 }} />
 
         <View style={styles.row}>
           <Text style={styles.small}>Don't have an account?</Text>

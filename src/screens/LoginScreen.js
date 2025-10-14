@@ -10,7 +10,7 @@ export default function LoginScreen({ navigation }) {
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
       <View style={styles.card}>
         <Text style={styles.heading}>Welcome back</Text>
-        <Text style={styles.sub}>Sign in to continue to TESDA Jobs</Text>
+        <Text style={styles.sub}>Sign in to continue to Connex</Text>
 
         <InputField label="Email" keyboardType="email-address" autoCapitalize="none" />
         <InputField label="Password" secureTextEntry />

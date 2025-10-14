@@ -1,41 +1,108 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet,
+} from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import theme from '../styles/theme';
+import { homeStyles as styles } from '../styles/HomeStyles';
+
+export default function HomeScreen({ navigation }) {
+  return (
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      {/* ===== HEADER BAR WITH HAMBURGER ===== */}
+      <View style={localStyles.topBar}>
+        <TouchableOpacity onPress={() => navigation.openDrawer()}>
+          <Ionicons name="menu" size={28} color={theme.colors.text} />
+        </TouchableOpacity>
+        <Text style={localStyles.headerTitle}>TESDA Jobs</Text>
+        <View style={{ width: 28 }} /> {/* Placeholder for spacing */}
+      </View>
 
 
-const sampleJobs = [
-{id:'1', title:'Welding NC II - Trainee', company:'TESDA Accredited Center', location:'Manila'},
-{id:'2', title:'Housekeeping NC II - Job Placement', company:'Hospitality Firm', location:'Cebu'},
-{id:'3', title:'Automotive Servicing NC II - Apprentice', company:'AutoTech Center', location:'Davao'}
-];
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
 
+        <View style={styles.header}>
+          <Text style={styles.title}>Find a job that suits your skills</Text>
+          <Text style={styles.subtitle}>
+            Explore certified training and career opportunities.
+          </Text>
 
-function JobCard({item}){
-return (
-<View style={styles.card}>
-<Text style={styles.jobTitle}>{item.title}</Text>
-<Text style={styles.meta}>{item.company} • {item.location}</Text>
-<TouchableOpacity style={styles.applyBtn}><Text style={{color:'#fff'}}>Apply</Text></TouchableOpacity>
-</View>
-)
+          <View style={styles.searchContainer}>
+            <Ionicons name="search" size={22} color={theme.colors.muted} />
+            <TextInput
+              placeholder="Search jobs, skills, or companies"
+              placeholderTextColor={theme.colors.muted}
+              style={styles.searchInput}
+            />
+            <TouchableOpacity style={styles.searchButton}>
+              <Text style={styles.searchButtonText}>Find Job</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Stats Section */}
+        <View style={styles.statsContainer}>
+          <View style={styles.statBox}>
+            <Text style={styles.statNumber}>1,245</Text>
+            <Text style={styles.statLabel}>Live Jobs</Text>
+          </View>
+          <View style={styles.statBox}>
+            <Text style={styles.statNumber}>812</Text>
+            <Text style={styles.statLabel}>Companies</Text>
+          </View>
+          <View style={styles.statBox}>
+            <Text style={styles.statNumber}>4,321</Text>
+            <Text style={styles.statLabel}>Applicants</Text>
+          </View>
+        </View>
+
+        {/* Popular Categories */}
+        <Text style={styles.sectionTitle}>Popular Categories</Text>
+        <View style={styles.categoriesContainer}>
+          {[
+            { name: 'IT & Software', icon: 'laptop' },
+            { name: 'Construction', icon: 'engineering' },
+            { name: 'Healthcare', icon: 'local-hospital' },
+            { name: 'Education', icon: 'school' },
+            { name: 'Design', icon: 'brush' },
+            { name: 'Marketing', icon: 'campaign' },
+          ].map((cat, index) => (
+            <View key={index} style={styles.categoryCard}>
+              <MaterialIcons
+                name={cat.icon}
+                size={28}
+                color={theme.colors.primary}
+              />
+              <Text style={styles.categoryName}>{cat.name}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* How It Works */}
+        <Text style={styles.sectionTitle}>How Connex Works</Text>
+        <View style={styles.stepsContainer}>
+          {[
+            { step: 'Create an Account', icon: 'person-add' },
+            { step: 'Upload Your Skills', icon: 'upload-file' },
+            { step: 'Find a Job', icon: 'search' },
+            { step: 'Apply & Get Hired', icon: 'work' },
+          ].map((item, index) => (
+            <View key={index} style={styles.stepBox}>
+              <MaterialIcons
+                name={item.icon}
+                size={28}
+                color={theme.colors.accent}
+              />
+              <Text style={styles.stepText}>{item.step}</Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
+  );
 }
-
-
-export default function HomeScreen(){
-return (
-<View style={styles.container}>
-<Text style={styles.header}>Recommended jobs</Text>
-<FlatList data={sampleJobs} keyExtractor={i=>i.id} renderItem={({item})=> <JobCard item={item} />} contentContainerStyle={{paddingBottom:60}} />
-</View>
-)
-}
-
-
-const styles = StyleSheet.create({
-container:{flex:1,backgroundColor:theme.colors.background,padding:16},
-header:{fontSize:20,fontWeight:'700',marginBottom:12,color:theme.colors.text},
-card:{backgroundColor:theme.colors.card,padding:16,borderRadius:12,marginBottom:12,shadowColor:'#000',shadowOpacity:0.04,shadowRadius:6,elevation:2},
-jobTitle:{fontWeight:'700'},
-meta:{color:theme.colors.muted,marginTop:6,marginBottom:8},
-applyBtn:{backgroundColor:theme.colors.primary,alignSelf:'flex-start',paddingVertical:8,paddingHorizontal:12,borderRadius:8}
-});

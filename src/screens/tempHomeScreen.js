@@ -14,15 +14,15 @@ import { homeStyles as styles } from '../styles/HomeStyles';
 export default function HomeScreen({ navigation }) {
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      {/* ===== HEADER BAR WITH HAMBURGER ===== */}
+
+      {/* ===== HEADER BAR WITH HAMBURGER =====
       <View style={localStyles.topBar}>
         <TouchableOpacity onPress={() => navigation.openDrawer()}>
           <Ionicons name="menu" size={28} color={theme.colors.text} />
         </TouchableOpacity>
-        <Text style={localStyles.headerTitle}>TESDA Jobs</Text>
-        <View style={{ width: 28 }} /> {/* Placeholder for spacing */}
-      </View>
-
+        <Text style={localStyles.headerTitle}>Connex</Text>
+        <View style={{ width: 28 }} />
+      </View> */}
 
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
 
@@ -82,8 +82,7 @@ export default function HomeScreen({ navigation }) {
             </View>
           ))}
         </View>
-
-        {/* How It Works */}
+        
         <Text style={styles.sectionTitle}>How Connex Works</Text>
         <View style={styles.stepsContainer}>
           {[
@@ -106,3 +105,20 @@ export default function HomeScreen({ navigation }) {
     </View>
   );
 }
+
+const localStyles = StyleSheet.create({
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: theme.colors.card,
+    elevation: 3,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: theme.colors.text,
+  },
+});

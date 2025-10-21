@@ -12,20 +12,18 @@ import theme from '../styles/theme';
 import { homeStyles as styles } from '../styles/HomeStyles';
 
 export default function HomeScreen({ navigation }) {
+  const categories = [
+    { name: 'IT & Software', icon: 'laptop' },
+    { name: 'Construction', icon: 'engineering' },
+    { name: 'Healthcare', icon: 'local-hospital' },
+    { name: 'Education', icon: 'school' },
+    { name: 'Design', icon: 'brush' },
+    { name: 'Marketing', icon: 'campaign' },
+  ];
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-
-      {/* ===== HEADER BAR WITH HAMBURGER =====
-      <View style={localStyles.topBar}>
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Ionicons name="menu" size={28} color={theme.colors.text} />
-        </TouchableOpacity>
-        <Text style={localStyles.headerTitle}>Connex</Text>
-        <View style={{ width: 28 }} />
-      </View> */}
-
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-
         <View style={styles.header}>
           <Text style={styles.title}>Find a job that suits your skills</Text>
           <Text style={styles.subtitle}>
@@ -64,25 +62,24 @@ export default function HomeScreen({ navigation }) {
         {/* Popular Categories */}
         <Text style={styles.sectionTitle}>Popular Categories</Text>
         <View style={styles.categoriesContainer}>
-          {[
-            { name: 'IT & Software', icon: 'laptop' },
-            { name: 'Construction', icon: 'engineering' },
-            { name: 'Healthcare', icon: 'local-hospital' },
-            { name: 'Education', icon: 'school' },
-            { name: 'Design', icon: 'brush' },
-            { name: 'Marketing', icon: 'campaign' },
-          ].map((cat, index) => (
-            <View key={index} style={styles.categoryCard}>
+          {categories.map((cat, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.categoryCard}
+              activeOpacity={0.8}
+              onPress={() => navigation.navigate('CategoryScreen', { category: cat.name })}
+            >
               <MaterialIcons
                 name={cat.icon}
                 size={28}
                 color={theme.colors.primary}
               />
               <Text style={styles.categoryName}>{cat.name}</Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
-        
+
+        {/* How Connex Works */}
         <Text style={styles.sectionTitle}>How Connex Works</Text>
         <View style={styles.stepsContainer}>
           {[

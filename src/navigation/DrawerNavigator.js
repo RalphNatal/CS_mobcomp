@@ -5,6 +5,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import CustomDrawer from '../components/CustomDrawer';
 import theme from '../styles/theme';
+import CategoryScreen from '../screens/CategoryScreen';
 
 const Drawer = createDrawerNavigator();
 

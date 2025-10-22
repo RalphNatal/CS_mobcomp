@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
-import styles from '../styles/ClothingStyles';
+import styles from '../../styles/ClothingStyles';
 
 const clothingData = [
   {

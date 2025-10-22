@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
-import styles from '../styles/ElectronicsStyles';
+import styles from '../../styles/ElectronicsStyles';
 
 const electronicsData = [
   {

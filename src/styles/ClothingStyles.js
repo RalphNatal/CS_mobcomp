@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import theme from '../../styles/theme';
+import theme from './theme';
 
 export default StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background, padding: 16 },

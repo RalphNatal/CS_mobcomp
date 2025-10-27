@@ -24,20 +24,11 @@ export default function AppNavigator() {
           gestureEnabled: true,
         }}
       >
-        {/* Auth / Intro Screens */}
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Signup" component={SignupScreen} />
-
-        {/* Main Drawer App */}
         <Stack.Screen name="Main" component={DrawerNavigator} />
-
-        {/* ✅ Category Screen (for Popular Categories navigation) */}
         <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
-        <Stack.Screen name="Electronics" component={ElectronicsScreen} />
-      <Stack.Screen name="Clothing" component={ClothingScreen} />
-      <Stack.Screen name="Groceries" component={GroceriesScreen} />
-      <Stack.Screen name="Services" component={ServicesScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

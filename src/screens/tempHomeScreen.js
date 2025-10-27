@@ -46,7 +46,7 @@ export default function HomeScreen({ navigation }) {
         {/* Stats Section */}
         <View style={styles.statsContainer}>
           <View style={styles.statBox}>
-            <Text style={styles.statNumber}>1,245</Text>
+            <Text style={styles.statNumber}>1,248</Text>
             <Text style={styles.statLabel}>Live Jobs</Text>
           </View>
           <View style={styles.statBox}>

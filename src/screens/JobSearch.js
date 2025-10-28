@@ -1,14 +1,21 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import theme from '../styles/theme';
 
-export default function CategoryScreen({ route, navigation }) {
-  const { category } = route.params || { category: 'Category' };
+export default function JobSearchScreen({ navigation }) {
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const companiesData = {
-    'IT & Software': [
-      { name: 'TechCorp Solutions', jobs: 12, rating: 4.5 },
+  // Dummy companies data
+  const allCompanies = [
+   { name: 'TechCorp Solutions', jobs: 12, rating: 4.5 },
       { name: 'Digital Innovations', jobs: 8, rating: 4.2 },
       { name: 'Software Express', jobs: 15, rating: 4.7 },
       { name: 'Cloud Nine Tech', jobs: 20, rating: 4.8 },
@@ -20,10 +27,7 @@ export default function CategoryScreen({ route, navigation }) {
       { name: 'Tech Frontier', jobs: 16, rating: 4.5 },
       { name: 'DevOps Pro', jobs: 13, rating: 4.3 },
       { name: 'Smart Systems', jobs: 18, rating: 4.7 },
-      { name: 'Future Tech', jobs: 11, rating: 4.4 }
-    ],
-
-    'Construction': [
+      { name: 'Future Tech', jobs: 11, rating: 4.4 },
       { name: 'BuildRight Corp', jobs: 6, rating: 4.1 },
       { name: 'Master Builders', jobs: 9, rating: 4.4 },
       { name: 'Construction Pro', jobs: 11, rating: 4.3 },
@@ -36,10 +40,7 @@ export default function CategoryScreen({ route, navigation }) {
       { name: 'City Developers', jobs: 16, rating: 4.7 },
       { name: 'Modern Construction', jobs: 13, rating: 4.5 },
       { name: 'Premium Builders', jobs: 18, rating: 4.6 },
-      { name: 'Elite Constructions', jobs: 7, rating: 4.2 }
-    ],
-
-    'Healthcare': [
+      { name: 'Elite Constructions', jobs: 7, rating: 4.2 },
       { name: 'MediCare Plus', jobs: 14, rating: 4.6 },
       { name: 'Health Solutions', jobs: 7, rating: 4.2 },
       { name: 'Care Network', jobs: 10, rating: 4.4 },
@@ -52,10 +53,7 @@ export default function CategoryScreen({ route, navigation }) {
       { name: 'Care Point', jobs: 11, rating: 4.4 },
       { name: 'Health First', jobs: 13, rating: 4.5 },
       { name: 'Med Solutions', jobs: 17, rating: 4.6 },
-      { name: 'Total Care', jobs: 8, rating: 4.2 }
-    ],
-
-    'Education': [
+      { name: 'Total Care', jobs: 8, rating: 4.2 },
       { name: 'EduTech Academy', jobs: 5, rating: 4.3 },
       { name: 'Learning Hub', jobs: 8, rating: 4.5 },
       { name: 'Knowledge Center', jobs: 6, rating: 4.2 },
@@ -68,10 +66,7 @@ export default function CategoryScreen({ route, navigation }) {
       { name: 'Learning Solutions', jobs: 11, rating: 4.5 },
       { name: 'Smart Schools', jobs: 13, rating: 4.6 },
       { name: 'Education Pro', jobs: 7, rating: 4.2 },
-      { name: 'Learn & Grow', jobs: 18, rating: 4.7 }
-    ],
-
-    'Design': [
+      { name: 'Learn & Grow', jobs: 18, rating: 4.7 },
       { name: 'Creative Studios', jobs: 9, rating: 4.7 },
       { name: 'Design Masters', jobs: 7, rating: 4.4 },
       { name: 'Art & Co', jobs: 11, rating: 4.6 },
@@ -84,11 +79,7 @@ export default function CategoryScreen({ route, navigation }) {
       { name: 'Creative Mind', jobs: 13, rating: 4.6 },
       { name: 'Design Express', jobs: 8, rating: 4.3 },
       { name: 'Art Studio Pro', jobs: 17, rating: 4.8 },
-      { name: 'Creative Force', jobs: 11, rating: 4.5 }
-
-    ],
-
-    'Marketing': [
+      { name: 'Creative Force', jobs: 11, rating: 4.5 },
       { name: 'Marketing Pros', jobs: 13, rating: 4.5 },
       { name: 'Digital Marketing Hub', jobs: 8, rating: 4.3 },
       { name: 'Brand Solutions', jobs: 10, rating: 4.4 },
@@ -103,10 +94,34 @@ export default function CategoryScreen({ route, navigation }) {
       { name: 'Digital Pro', jobs: 18, rating: 4.8 },
       { name: 'Brand Masters', jobs: 10, rating: 4.4 }
 
-    ],
-  };
+   
+  ];
 
-   const companies = companiesData[category] || [];
+  const filteredCompanies = allCompanies.filter(company =>
+    company.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const renderCompanyItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.companyCard}
+      onPress={() => navigation.navigate('CategoryScreen', { category: item.category })}
+    >
+      <View style={styles.companyIcon}>
+        <MaterialIcons name="business" size={24} color={theme.colors.primary} />
+      </View>
+      <View style={styles.companyInfo}>
+        <Text style={styles.companyName}>{item.name}</Text>
+        <Text style={styles.categoryText}>{item.category}</Text>
+        <View style={styles.statsRow}>
+          <Text style={styles.jobCount}>{item.jobs} open positions</Text>
+          <View style={styles.ratingContainer}>
+            <MaterialIcons name="star" size={16} color="#FFD700" />
+            <Text style={styles.ratingText}>{item.rating}</Text>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
@@ -117,37 +132,28 @@ export default function CategoryScreen({ route, navigation }) {
         >
           <MaterialIcons name="arrow-back" size={24} color={theme.colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{category}</Text>
-        <Text style={styles.subtitle}>
-          <Text>{companies.length} Companies</Text>
-        </Text>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={22} color={theme.colors.muted} />
+          <TextInput
+            placeholder="Search companies"
+            placeholderTextColor={theme.colors.muted}
+            style={styles.searchInput}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            autoFocus={true}
+          />
+        </View>
       </View>
 
-      <ScrollView style={styles.companiesList}>
-        {companies.map((company, index) => (
-          <TouchableOpacity 
-            key={index} 
-            style={styles.companyCard}
-            onPress={() => navigation.navigate('JobDetails', { company, category })}
-          >
-            <View style={styles.companyIcon}>
-              <MaterialIcons name="business" size={24} color={theme.colors.primary} />
-            </View>
-            <View style={styles.companyInfo}>
-              <Text style={styles.companyName}>{company.name}</Text>
-              <View style={styles.companyStats}>
-                <Text style={styles.statsText}>
-                  <Text>{company.jobs} open positions</Text>
-                </Text>
-                <View style={styles.ratingContainer}>
-                  <MaterialIcons name="star" size={16} color="#FFD700" />
-                  <Text style={styles.statsText}>{company.rating}</Text>
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <FlatList
+        data={filteredCompanies}
+        renderItem={renderCompanyItem}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={
+          <Text style={styles.noResults}>No companies found</Text>
+        }
+      />
     </View>
   );
 }
@@ -160,24 +166,29 @@ const styles = StyleSheet.create({
   header: {
     padding: 16,
     backgroundColor: theme.colors.card,
+    flexDirection: 'row',
+    alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
   },
   backButton: {
-    padding: 8,
-    marginBottom: 8,
+    marginRight: 12,
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  searchContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.background,
+    borderRadius: 10,
+    padding: 8,
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 16,
     color: theme.colors.text,
   },
-  subtitle: {
-    fontSize: 14,
-    color: theme.colors.muted,
-    marginTop: 4,
-  },
-  companiesList: {
+  listContainer: {
     padding: 16,
   },
   companyCard: {
@@ -210,18 +221,33 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     marginBottom: 4,
   },
-  companyStats: {
+  categoryText: {
+    fontSize: 14,
+    color: theme.colors.muted,
+    marginBottom: 4,
+  },
+  statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  statsText: {
+  jobCount: {
     fontSize: 14,
-    color: theme.colors.muted,
+    color: theme.colors.primary,
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+  },
+  ratingText: {
+    marginLeft: 4,
+    fontSize: 14,
+    color: theme.colors.muted,
+  },
+  noResults: {
+    textAlign: 'center',
+    color: theme.colors.muted,
+    marginTop: 20,
+    fontSize: 16,
   },
 });

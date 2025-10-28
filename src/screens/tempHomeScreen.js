@@ -1,5 +1,4 @@
-import React from 'react';
-import {
+import React, { useState } from 'react';import {
   View,
   Text,
   ScrollView,
@@ -10,8 +9,10 @@ import {
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import theme from '../styles/theme';
 import { homeStyles as styles } from '../styles/HomeStyles';
+import UploadSkillsScreen from './UploadSkillScreen';
 
-export default function HomeScreen({ navigation }) {
+
+export default function tempHomeScreen({ navigation }) {
   const categories = [
     { name: 'IT & Software', icon: 'laptop' },
     { name: 'Construction', icon: 'engineering' },
@@ -20,6 +21,25 @@ export default function HomeScreen({ navigation }) {
     { name: 'Design', icon: 'brush' },
     { name: 'Marketing', icon: 'campaign' },
   ];
+
+  const [skillsModalVisible, setSkillsModalVisible] = useState(false);
+
+  const handleStepClick = (step) => {
+    switch(step) {
+      case 'Create an Account':
+        navigation.navigate('Signup');
+        break;
+      case 'Upload Your Skills':
+        setSkillsModalVisible(true);
+        break;
+      case 'Find a Job':
+        navigation.navigate('JobSearch');
+        break;
+      case 'Apply & Get Hired':
+        // Handle application process
+        break;
+    }
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -37,7 +57,10 @@ export default function HomeScreen({ navigation }) {
               placeholderTextColor={theme.colors.muted}
               style={styles.searchInput}
             />
-            <TouchableOpacity style={styles.searchButton}>
+            <TouchableOpacity 
+              style={styles.searchButton}
+              onPress={() => navigation.navigate('JobSearch')}
+            >
               <Text style={styles.searchButtonText}>Find Job</Text>
             </TouchableOpacity>
           </View>
@@ -46,7 +69,7 @@ export default function HomeScreen({ navigation }) {
         {/* Stats Section */}
         <View style={styles.statsContainer}>
           <View style={styles.statBox}>
-            <Text style={styles.statNumber}>1,248</Text>
+            <Text style={styles.statNumber}>1,245</Text>
             <Text style={styles.statLabel}>Live Jobs</Text>
           </View>
           <View style={styles.statBox}>
@@ -82,22 +105,32 @@ export default function HomeScreen({ navigation }) {
         {/* How Connex Works */}
         <Text style={styles.sectionTitle}>How Connex Works</Text>
         <View style={styles.stepsContainer}>
-          {[
-            { step: 'Create an Account', icon: 'person-add' },
-            { step: 'Upload Your Skills', icon: 'upload-file' },
-            { step: 'Find a Job', icon: 'search' },
-            { step: 'Apply & Get Hired', icon: 'work' },
-          ].map((item, index) => (
-            <View key={index} style={styles.stepBox}>
-              <MaterialIcons
-                name={item.icon}
-                size={28}
-                color={theme.colors.accent}
-              />
-              <Text style={styles.stepText}>{item.step}</Text>
-            </View>
-          ))}
-        </View>
+        {[
+          { step: 'Create an Account', icon: 'person-add' },
+          { step: 'Upload Your Skills', icon: 'upload-file' },
+          { step: 'Find a Job', icon: 'search' },
+          { step: 'Apply & Get Hired', icon: 'work' },
+        ].map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.stepBox}
+            onPress={() => handleStepClick(item.step)}
+          >
+            <MaterialIcons
+              name={item.icon}
+              size={28}
+              color={theme.colors.accent}
+            />
+            <Text style={styles.stepText}>{item.step}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+        <UploadSkillsScreen
+        visible={skillsModalVisible}
+        onClose={() => setSkillsModalVisible(false)}
+      />
+
       </ScrollView>
     </View>
   );

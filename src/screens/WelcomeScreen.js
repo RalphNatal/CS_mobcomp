@@ -2,10 +2,13 @@ import React, { useRef, useEffect } from 'react';
 import { View, Text, Image, Animated, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import PrimaryButton from '../components/PrimaryButton';
-import theme from '../styles/theme';
-import { welcomeStyles as styles } from '../styles/WelcomeStyles';
+import { lightTheme, darkTheme } from '../styles/theme';
+import { welcomeStyles } from '../styles/WelcomeStyles';
 
 const { width } = Dimensions.get('window');
+
+const darkModeEnabled = false;
+const currentTheme = darkModeEnabled ? darkTheme : lightTheme;
 
 export default function WelcomeScreen({ navigation }) {
   const fade = useRef(new Animated.Value(0)).current;
@@ -18,11 +21,13 @@ export default function WelcomeScreen({ navigation }) {
     ]).start();
   }, []);
 
+  const styles = welcomeStyles(currentTheme);
+
   return (
     <View style={styles.container}>
       {/* Background gradient */}
       <LinearGradient
-        colors={[theme.colors.background, theme.colors.accent + '25']}
+        colors={[currentTheme.colors.background, currentTheme.colors.accent + '25']}
         style={styles.gradient}
       />
 
@@ -46,11 +51,10 @@ export default function WelcomeScreen({ navigation }) {
           <PrimaryButton
             title="Create Account"
             onPress={() => navigation.navigate('Signup')}
-            style={{ backgroundColor: theme.colors.accent }}
+            style={{ backgroundColor: currentTheme.colors.accent }}
           />
         </View>
       </Animated.View>
     </View>
   );
 }
-

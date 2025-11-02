@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -8,14 +8,114 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import theme from '../styles/theme';
+import { ThemeContext } from '../../App';
+import { FontSizeContext } from '../utils/FontSizeContext';
+import SpeakableText from '../components/SpeakableText';
+
+const styles = (theme, fontSizeMultiplier) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    header: {
+      padding: 16,
+      backgroundColor: theme.colors.card,
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.muted,
+    },
+    backButton: {
+      marginRight: 12,
+    },
+    searchContainer: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: theme.colors.background,
+      borderRadius: 10,
+      padding: 8,
+    },
+    searchInput: {
+      flex: 1,
+      marginLeft: 8,
+      fontSize: 16 * fontSizeMultiplier,
+      color: theme.colors.text,
+    },
+    listContainer: {
+      padding: 16,
+    },
+    companyCard: {
+      flexDirection: 'row',
+      padding: 16,
+      backgroundColor: theme.colors.card,
+      borderRadius: 12,
+      marginBottom: 12,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    companyIcon: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      backgroundColor: `${theme.colors.primary}20`,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 12,
+    },
+    companyInfo: {
+      flex: 1,
+    },
+    companyName: {
+      fontSize: 16 * fontSizeMultiplier,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: 4,
+    },
+    categoryText: {
+      fontSize: 14 * fontSizeMultiplier,
+      color: theme.colors.muted,
+      marginBottom: 4,
+    },
+    statsRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    jobCount: {
+      fontSize: 14 * fontSizeMultiplier,
+      color: theme.colors.primary,
+    },
+    ratingContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    ratingText: {
+      marginLeft: 4,
+      fontSize: 14 * fontSizeMultiplier,
+      color: theme.colors.muted,
+    },
+    noResults: {
+      textAlign: 'center',
+      color: theme.colors.muted,
+      marginTop: 20,
+      fontSize: 16 * fontSizeMultiplier,
+    },
+  });
 
 export default function JobSearchScreen({ navigation }) {
+  const { currentTheme } = useContext(ThemeContext);
+  const { fontSizeMultiplier } = useContext(FontSizeContext);
+  const combinedStyles = styles(currentTheme, fontSizeMultiplier);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Dummy companies data
   const allCompanies = [
-   { name: 'TechCorp Solutions', jobs: 12, rating: 4.5 },
+  { name: 'TechCorp Solutions', jobs: 12, rating: 4.5 },
       { name: 'Digital Innovations', jobs: 8, rating: 4.2 },
       { name: 'Software Express', jobs: 15, rating: 4.7 },
       { name: 'Cloud Nine Tech', jobs: 20, rating: 4.8 },
@@ -94,29 +194,28 @@ export default function JobSearchScreen({ navigation }) {
       { name: 'Digital Pro', jobs: 18, rating: 4.8 },
       { name: 'Brand Masters', jobs: 10, rating: 4.4 }
 
-   
   ];
 
   const filteredCompanies = allCompanies.filter(company =>
     company.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const renderCompanyItem = ({ item }) => (
+  const renderCompany = ({ item }) => (
     <TouchableOpacity
-      style={styles.companyCard}
-      onPress={() => navigation.navigate('CategoryScreen', { category: item.category })}
+      style={combinedStyles.companyCard}
+      onPress={() => navigation.navigate('JobDetails', { company: item })}
+      activeOpacity={0.8}
     >
-      <View style={styles.companyIcon}>
-        <MaterialIcons name="business" size={24} color={theme.colors.primary} />
+      <View style={combinedStyles.companyIcon}>
+        <MaterialIcons name="business" size={24 * fontSizeMultiplier} color={currentTheme.colors.primary} />
       </View>
-      <View style={styles.companyInfo}>
-        <Text style={styles.companyName}>{item.name}</Text>
-        <Text style={styles.categoryText}>{item.category}</Text>
-        <View style={styles.statsRow}>
-          <Text style={styles.jobCount}>{item.jobs} open positions</Text>
-          <View style={styles.ratingContainer}>
-            <MaterialIcons name="star" size={16} color="#FFD700" />
-            <Text style={styles.ratingText}>{item.rating}</Text>
+      <View style={combinedStyles.companyInfo}>
+        <SpeakableText style={combinedStyles.companyName}>{item.name}</SpeakableText>
+        <View style={combinedStyles.statsRow}>
+          <SpeakableText style={combinedStyles.jobCount}>{item.jobs} jobs</SpeakableText>
+          <View style={combinedStyles.ratingContainer}>
+            <Ionicons name="star" size={16 * fontSizeMultiplier} color="#FFD700" />
+            <SpeakableText style={combinedStyles.ratingText}>{item.rating}</SpeakableText>
           </View>
         </View>
       </View>
@@ -124,130 +223,40 @@ export default function JobSearchScreen({ navigation }) {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
+    <View style={combinedStyles.container}>
+      <View style={combinedStyles.header}>
+        <TouchableOpacity
+          style={combinedStyles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <MaterialIcons name="arrow-back" size={24} color={theme.colors.text} />
+          <Ionicons name="arrow-back" size={22 * fontSizeMultiplier} color={currentTheme.colors.primary} />
         </TouchableOpacity>
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={22} color={theme.colors.muted} />
-          <TextInput
-            placeholder="Search companies"
-            placeholderTextColor={theme.colors.muted}
-            style={styles.searchInput}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            autoFocus={true}
-          />
-        </View>
+        <SpeakableText style={{ fontSize: 18 * fontSizeMultiplier, fontWeight: 'bold', color: currentTheme.colors.text, marginLeft: 10 }}>
+          Job Search
+        </SpeakableText>
       </View>
-
-      <FlatList
-        data={filteredCompanies}
-        renderItem={renderCompanyItem}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={styles.listContainer}
-        ListEmptyComponent={
-          <Text style={styles.noResults}>No companies found</Text>
-        }
-      />
+      <View style={combinedStyles.searchContainer}>
+        <Ionicons name="search" size={20 * fontSizeMultiplier} color={currentTheme.colors.muted} />
+        <TextInput
+          style={combinedStyles.searchInput}
+          placeholder="Search companies"
+          placeholderTextColor={currentTheme.colors.muted}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+      </View>
+      <View style={combinedStyles.listContainer}>
+        {filteredCompanies.length === 0 ? (
+          <SpeakableText style={combinedStyles.noResults}>No companies found.</SpeakableText>
+        ) : (
+          <FlatList
+            data={filteredCompanies}
+            renderItem={renderCompany}
+            keyExtractor={item => item.id}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    padding: 16,
-    backgroundColor: theme.colors.card,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  backButton: {
-    marginRight: 12,
-  },
-  searchContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.background,
-    borderRadius: 10,
-    padding: 8,
-  },
-  searchInput: {
-    flex: 1,
-    marginLeft: 8,
-    fontSize: 16,
-    color: theme.colors.text,
-  },
-  listContainer: {
-    padding: 16,
-  },
-  companyCard: {
-    flexDirection: 'row',
-    padding: 16,
-    backgroundColor: theme.colors.card,
-    borderRadius: 12,
-    marginBottom: 12,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  companyIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: `${theme.colors.primary}20`,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  companyInfo: {
-    flex: 1,
-  },
-  companyName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginBottom: 4,
-  },
-  categoryText: {
-    fontSize: 14,
-    color: theme.colors.muted,
-    marginBottom: 4,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  jobCount: {
-    fontSize: 14,
-    color: theme.colors.primary,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ratingText: {
-    marginLeft: 4,
-    fontSize: 14,
-    color: theme.colors.muted,
-  },
-  noResults: {
-    textAlign: 'center',
-    color: theme.colors.muted,
-    marginTop: 20,
-    fontSize: 16,
-  },
-});

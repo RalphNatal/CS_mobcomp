@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
-import theme from './theme';
 
-export const companyCardStyles = StyleSheet.create({
+export const companyCardStyles = (theme) => StyleSheet.create({
   card: {
     backgroundColor: theme.colors.card,
     padding: theme.spacing.m,

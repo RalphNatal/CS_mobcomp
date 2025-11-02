@@ -1,18 +1,29 @@
-import React from 'react';
-import { View, Text, Image } from 'react-native';
-import { profileStyles as styles } from '../styles/ProfileStyles';
+import React, { useContext } from 'react';
+import { View, Image } from 'react-native';
+import { ThemeContext } from '../../App';
+import { FontSizeContext } from '../utils/FontSizeContext';
+import { profileStyles } from '../styles/ProfileStyles';
+import SpeakableText from '../components/SpeakableText';
 
 export default function ProfileScreen() {
+  const { currentTheme } = useContext(ThemeContext);
+  const { fontSizeMultiplier } = useContext(FontSizeContext);
+  const styles = profileStyles(currentTheme);
+
+  const scaleFontSize = (base) => base * fontSizeMultiplier;
+
   return (
     <View style={styles.container}>
       <Image
         source={require('../../assets/images/profile.png')}
         style={styles.avatar}
       />
-      <Text style={styles.name}>Juan Dela Cruz</Text>
-      <Text style={styles.email}>juan.delacruz@example.com</Text>
-      <Text style={styles.sectionTitle}>Skills:</Text>
-      <Text style={styles.skills}>• Welding{"\n"}• Electrical Installation{"\n"}• Computer Servicing</Text>
+      <SpeakableText style={[styles.name, { fontSize: scaleFontSize(24) }]}>Juan Dela Cruz</SpeakableText>
+      <SpeakableText style={[styles.email, { fontSize: scaleFontSize(16) }]}>juan.delacruz@example.com</SpeakableText>
+      <SpeakableText style={[styles.sectionTitle, { fontSize: scaleFontSize(20) }]}>Skills:</SpeakableText>
+      <SpeakableText style={[styles.skills, { fontSize: scaleFontSize(14) }]}>
+        • Welding{"\n"}• Electrical Installation{"\n"}• Computer Servicing
+      </SpeakableText>
     </View>
   );
 }

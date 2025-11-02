@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
-import theme from './theme';
 
-export const profileStyles = StyleSheet.create({
+export const profileStyles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',

@@ -1,11 +1,91 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useContext } from 'react';
+import { View, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import theme from '../styles/theme';
+import { ThemeContext } from '../../App';
+import { FontSizeContext } from '../utils/FontSizeContext';
+import SpeakableText from '../components/SpeakableText';
+
+const categoryStyles = (theme, fontSizeMultiplier) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    header: {
+      padding: 16,
+      backgroundColor: theme.colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.muted,
+    },
+    backButton: {
+      padding: 8,
+      marginBottom: 8,
+    },
+    headerTitle: {
+      fontSize: 24 * fontSizeMultiplier,
+      fontWeight: 'bold',
+      color: theme.colors.text,
+    },
+    subtitle: {
+      fontSize: 14 * fontSizeMultiplier,
+      color: theme.colors.muted,
+      marginTop: 4,
+    },
+    companiesList: {
+      padding: 16,
+    },
+    companyCard: {
+      flexDirection: 'row',
+      padding: 16,
+      backgroundColor: theme.colors.card,
+      borderRadius: 12,
+      marginBottom: 12,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    companyIcon: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      backgroundColor: `${theme.colors.primary}20`,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 12,
+    },
+    companyInfo: {
+      flex: 1,
+    },
+    companyName: {
+      fontSize: 16 * fontSizeMultiplier,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: 4,
+    },
+    companyStats: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    statsText: {
+      fontSize: 14 * fontSizeMultiplier,
+      color: theme.colors.muted,
+    },
+    ratingContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+  });
 
 export default function CategoryScreen({ route, navigation }) {
-  const { category } = route.params || { category: 'Category' };
+  const { currentTheme } = useContext(ThemeContext);
+  const { fontSizeMultiplier } = useContext(FontSizeContext);
+  const styles = categoryStyles(currentTheme, fontSizeMultiplier);
 
+  const { category } = route.params || { category: 'Category' };
   const companiesData = {
     'IT & Software': [
       { name: 'TechCorp Solutions', jobs: 12, rating: 4.5 },
@@ -22,7 +102,6 @@ export default function CategoryScreen({ route, navigation }) {
       { name: 'Smart Systems', jobs: 18, rating: 4.7 },
       { name: 'Future Tech', jobs: 11, rating: 4.4 }
     ],
-
     'Construction': [
       { name: 'BuildRight Corp', jobs: 6, rating: 4.1 },
       { name: 'Master Builders', jobs: 9, rating: 4.4 },
@@ -38,7 +117,6 @@ export default function CategoryScreen({ route, navigation }) {
       { name: 'Premium Builders', jobs: 18, rating: 4.6 },
       { name: 'Elite Constructions', jobs: 7, rating: 4.2 }
     ],
-
     'Healthcare': [
       { name: 'MediCare Plus', jobs: 14, rating: 4.6 },
       { name: 'Health Solutions', jobs: 7, rating: 4.2 },
@@ -54,7 +132,6 @@ export default function CategoryScreen({ route, navigation }) {
       { name: 'Med Solutions', jobs: 17, rating: 4.6 },
       { name: 'Total Care', jobs: 8, rating: 4.2 }
     ],
-
     'Education': [
       { name: 'EduTech Academy', jobs: 5, rating: 4.3 },
       { name: 'Learning Hub', jobs: 8, rating: 4.5 },
@@ -70,7 +147,6 @@ export default function CategoryScreen({ route, navigation }) {
       { name: 'Education Pro', jobs: 7, rating: 4.2 },
       { name: 'Learn & Grow', jobs: 18, rating: 4.7 }
     ],
-
     'Design': [
       { name: 'Creative Studios', jobs: 9, rating: 4.7 },
       { name: 'Design Masters', jobs: 7, rating: 4.4 },
@@ -85,9 +161,7 @@ export default function CategoryScreen({ route, navigation }) {
       { name: 'Design Express', jobs: 8, rating: 4.3 },
       { name: 'Art Studio Pro', jobs: 17, rating: 4.8 },
       { name: 'Creative Force', jobs: 11, rating: 4.5 }
-
     ],
-
     'Marketing': [
       { name: 'Marketing Pros', jobs: 13, rating: 4.5 },
       { name: 'Digital Marketing Hub', jobs: 8, rating: 4.3 },
@@ -102,46 +176,40 @@ export default function CategoryScreen({ route, navigation }) {
       { name: 'Market Leaders', jobs: 13, rating: 4.5 },
       { name: 'Digital Pro', jobs: 18, rating: 4.8 },
       { name: 'Brand Masters', jobs: 10, rating: 4.4 }
-
     ],
   };
-
-   const companies = companiesData[category] || [];
+  
+  const companies = companiesData[category] || [];
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <MaterialIcons name="arrow-back" size={24} color={theme.colors.text} />
+          <MaterialIcons name="arrow-back" size={24 * fontSizeMultiplier} color={currentTheme.colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{category}</Text>
-        <Text style={styles.subtitle}>
-          <Text>{companies.length} Companies</Text>
-        </Text>
+        <SpeakableText style={styles.headerTitle}>{category}</SpeakableText>
+        <SpeakableText style={styles.subtitle}>{companies.length} Companies</SpeakableText>
       </View>
-
       <ScrollView style={styles.companiesList}>
         {companies.map((company, index) => (
-          <TouchableOpacity 
-            key={index} 
+          <TouchableOpacity
+            key={index}
             style={styles.companyCard}
             onPress={() => navigation.navigate('JobDetails', { company, category })}
           >
             <View style={styles.companyIcon}>
-              <MaterialIcons name="business" size={24} color={theme.colors.primary} />
+              <MaterialIcons name="business" size={24 * fontSizeMultiplier} color={currentTheme.colors.primary} />
             </View>
             <View style={styles.companyInfo}>
-              <Text style={styles.companyName}>{company.name}</Text>
+              <SpeakableText style={styles.companyName}>{company.name}</SpeakableText>
               <View style={styles.companyStats}>
-                <Text style={styles.statsText}>
-                  <Text>{company.jobs} open positions</Text>
-                </Text>
+                <SpeakableText style={styles.statsText}>{company.jobs} open positions</SpeakableText>
                 <View style={styles.ratingContainer}>
-                  <MaterialIcons name="star" size={16} color="#FFD700" />
-                  <Text style={styles.statsText}>{company.rating}</Text>
+                  <MaterialIcons name="star" size={16 * fontSizeMultiplier} color="#FFD700" />
+                  <SpeakableText style={styles.statsText}>{company.rating}</SpeakableText>
                 </View>
               </View>
             </View>
@@ -151,77 +219,3 @@ export default function CategoryScreen({ route, navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    padding: 16,
-    backgroundColor: theme.colors.card,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  backButton: {
-    padding: 8,
-    marginBottom: 8,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: theme.colors.text,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: theme.colors.muted,
-    marginTop: 4,
-  },
-  companiesList: {
-    padding: 16,
-  },
-  companyCard: {
-    flexDirection: 'row',
-    padding: 16,
-    backgroundColor: theme.colors.card,
-    borderRadius: 12,
-    marginBottom: 12,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  companyIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: `${theme.colors.primary}20`,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  companyInfo: {
-    flex: 1,
-  },
-  companyName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginBottom: 4,
-  },
-  companyStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  statsText: {
-    fontSize: 14,
-    color: theme.colors.muted,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-});

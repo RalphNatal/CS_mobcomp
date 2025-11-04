@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
-import theme from './theme';
 
-export const jobDetailsStyles = StyleSheet.create({
+export const jobDetailsStyles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
     padding: theme.spacing.l,

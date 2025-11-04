@@ -1,38 +1,47 @@
 import React, { useContext } from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { lightTheme, darkTheme } from '../styles/theme';
+import { View, TextInput, StyleSheet, Text } from 'react-native';
+import { ThemeContext } from '../../App';
 import { FontSizeContext } from '../utils/FontSizeContext';
 
-const darkModeEnabled = false;
-const currentTheme = darkModeEnabled ? darkTheme : lightTheme;
-
-const buttonStyles = (theme, fontSizeMultiplier) =>
+const inputStyles = (theme, fontSizeMultiplier) =>
   StyleSheet.create({
-    btn: {
-      backgroundColor: theme.colors.primary,
-      paddingVertical: 14,
-      paddingHorizontal: 20,
-      borderRadius: 12,
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOpacity: 0.08,
-      shadowRadius: 8,
-      elevation: 3,
+    label: {
+      color: theme.colors.muted,
+      marginBottom: 6,
+      fontSize: 14 * fontSizeMultiplier,
     },
-    txt: {
-      color: '#fff',
-      fontWeight: '600',
+    input: {
+      backgroundColor: theme.colors.card,
+      padding: 12,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: theme.colors.border || '#E2E8F0',
+      color: theme.colors.text,
       fontSize: 16 * fontSizeMultiplier,
-    }
+    },
+    errorText: {
+      color: 'red',
+      fontSize: 12 * fontSizeMultiplier,
+      marginTop: 4,
+    },
   });
 
-export default function PrimaryButton({ title, onPress, style }) {
+const InputField = ({ label, error, ...props }) => {
+  const { currentTheme } = useContext(ThemeContext);
   const { fontSizeMultiplier } = useContext(FontSizeContext);
-  const styles = buttonStyles(currentTheme, fontSizeMultiplier);
+  const styles = inputStyles(currentTheme, fontSizeMultiplier);
 
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.btn, style]}>
-      <Text style={styles.txt}>{title}</Text>
-    </TouchableOpacity>
+    <View style={{ marginBottom: 16 }}>
+      <Text style={styles.label}>{label}</Text>
+      <TextInput
+        style={[styles.input, error && { borderColor: 'red' }]}
+        placeholderTextColor={currentTheme.colors.muted}
+        {...props}
+      />
+      {error && <Text style={styles.errorText}>{error}</Text>}
+    </View>
   );
-}
+};
+
+export default InputField;

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, FlatList } from 'react-native';
 import CompanyCard from '../components/CompanyCard';
-import { jobListStyles as styles } from '../styles/JobListStyles';
+import { jobListStyles } from '../styles/JobListStyles';
+import { ThemeContext } from '../../App';
 
 const jobs = [
   { id: '1', name: 'TechWorks Solutions', rating: 4.5, field: 'IT Services' },
@@ -11,8 +12,11 @@ const jobs = [
 ];
 
 export default function JobListScreen({ navigation }) {
+  const { currentTheme } = useContext(ThemeContext);
+  const styles = jobListStyles(currentTheme);
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: currentTheme.colors.background }]}> 
       <FlatList
         data={jobs}
         renderItem={({ item }) => (

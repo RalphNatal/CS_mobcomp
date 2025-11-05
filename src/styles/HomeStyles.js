@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
-import theme from './theme';
 
-export const homeStyles = StyleSheet.create({
+export const homeStyles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,

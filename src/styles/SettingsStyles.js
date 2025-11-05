@@ -1,20 +1,19 @@
 import { StyleSheet } from 'react-native';
-import theme from './theme';
 
-export const settingsStyles = StyleSheet.create({
+export const settingsStyles = (theme, multiplier = 1) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
     padding: 20,
   },
   header: {
-    fontSize: 24,
+    fontSize: 24 * multiplier,
     fontWeight: '700',
     color: theme.colors.text,
     marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 16 * multiplier,
     fontWeight: '600',
     color: theme.colors.muted,
     marginTop: 20,
@@ -33,7 +32,7 @@ export const settingsStyles = StyleSheet.create({
     elevation: 2,
   },
   optionText: {
-    fontSize: 16,
+    fontSize: 16 * multiplier,
     marginLeft: 12,
     color: theme.colors.text,
   },

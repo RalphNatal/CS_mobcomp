@@ -1,9 +1,8 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import theme from './theme';
 
 const { width, height } = Dimensions.get('window');
 
-export const welcomeStyles = StyleSheet.create({
+export const welcomeStyles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,

@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
-import theme from './theme';
 
-export default StyleSheet.create({
+export const someComponentStyles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
@@ -11,11 +10,11 @@ export default StyleSheet.create({
     fontSize: 22,
     fontWeight: '700',
     marginBottom: 20,
-    color: theme.colors.primaryText,
+    color: theme.colors.text, 
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.card, 
     padding: 15,
     borderRadius: 12,
     marginBottom: 15,
@@ -31,6 +30,14 @@ export default StyleSheet.create({
     marginRight: 12,
   },
   textContainer: { flex: 1 },
-  name: { fontSize: 18, fontWeight: '600' },
-  desc: { fontSize: 14, color: '#666', marginTop: 4 },
+  name: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: theme.colors.text, 
+  },
+  desc: {
+    fontSize: 14,
+    color: theme.colors.muted,
+    marginTop: 4,
+  },
 });

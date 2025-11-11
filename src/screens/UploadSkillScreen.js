@@ -1,22 +1,22 @@
 import React, { useState, useContext } from 'react';
-import {
-  View,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Modal,
-} from 'react-native';
+import { View, ScrollView, TextInput, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ThemeContext } from '../../App';
 import { FontSizeContext } from '../utils/FontSizeContext';
 import SpeakableText from '../components/SpeakableText';
+import { useDyslexic } from '../utils/DyslexicContext';
+import { useTts } from '../utils/TtsContext';
 
+// UploadSkillsScreen
 export default function UploadSkillsScreen({ visible, onClose }) {
   const { currentTheme } = useContext(ThemeContext);
   const { fontSizeMultiplier } = useContext(FontSizeContext);
-  const styles = createStyles(currentTheme, fontSizeMultiplier);
+  const { dyslexicEnabled } = useDyslexic();
+  const styles = createStyles(currentTheme, fontSizeMultiplier, dyslexicEnabled);
 
+  const { ttsEnabled } = useTts();
+
+  // Local state to track form input fields
   const [formData, setFormData] = useState({
     skills: '',
     experience: '',
@@ -28,6 +28,7 @@ export default function UploadSkillsScreen({ visible, onClose }) {
     linkedinProfile: '',
   });
 
+  // Handles submission, currently logs and closes modal (hook to API or storage here)
   const handleSubmit = () => {
     console.log(formData);
     onClose();
@@ -42,12 +43,21 @@ export default function UploadSkillsScreen({ visible, onClose }) {
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
+          {/* Modal header with title and close button */}
           <View style={styles.modalHeader}>
-            <SpeakableText style={styles.modalTitle}>Upload Your Skills</SpeakableText>
+            <SpeakableText style={styles.modalTitle} ttsEnabled={ttsEnabled}>
+              Upload Your Skills
+            </SpeakableText>
             <TouchableOpacity onPress={onClose}>
-              <MaterialIcons name="close" size={24 * fontSizeMultiplier} color={currentTheme.colors.text} />
+              <MaterialIcons
+                name="close"
+                size={24 * fontSizeMultiplier}
+                color={currentTheme.colors.text}
+              />
             </TouchableOpacity>
           </View>
+
+          {/* Form fields section */}
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.formContainer}>
               {[
@@ -61,7 +71,9 @@ export default function UploadSkillsScreen({ visible, onClose }) {
                 { label: 'LinkedIn Profile', value: formData.linkedinProfile, key: 'linkedinProfile', placeholder: 'Your LinkedIn profile URL' },
               ].map(({ label, value, key, multiline, placeholder }) => (
                 <View style={styles.inputGroup} key={key}>
-                  <SpeakableText style={styles.label}>{label}</SpeakableText>
+                  <SpeakableText style={styles.label} ttsEnabled={ttsEnabled}>
+                    {label}
+                  </SpeakableText>
                   <TextInput
                     style={styles.input}
                     placeholder={placeholder}
@@ -72,8 +84,12 @@ export default function UploadSkillsScreen({ visible, onClose }) {
                   />
                 </View>
               ))}
+
+              {/* Submit button */}
               <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                <SpeakableText style={styles.submitButtonText}>Submit Skills</SpeakableText>
+                <SpeakableText style={styles.submitButtonText} ttsEnabled={ttsEnabled}>
+                  Submit Skills
+                </SpeakableText>
               </TouchableOpacity>
             </View>
           </ScrollView>
@@ -83,18 +99,18 @@ export default function UploadSkillsScreen({ visible, onClose }) {
   );
 }
 
-const createStyles = (theme, fontSizeMultiplier) =>
+const createStyles = (theme, fontSizeMultiplier, dyslexicEnabled) =>
   StyleSheet.create({
     modalContainer: {
       flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      justifyContent: 'flex-end',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background for modal
+      justifyContent: 'flex-end', // Align modal content to bottom
     },
     modalContent: {
       backgroundColor: theme.colors.background,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
-      height: '90%',
+      height: '90%', // Modal covers most of the screen
       padding: 16,
     },
     modalHeader: {
@@ -105,8 +121,9 @@ const createStyles = (theme, fontSizeMultiplier) =>
     },
     modalTitle: {
       fontSize: 20 * fontSizeMultiplier,
-      fontWeight: 'bold',
       color: theme.colors.text,
+      fontWeight: dyslexicEnabled ? 'normal' : 'bold',
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
     },
     formContainer: {
       paddingBottom: 20,
@@ -119,6 +136,7 @@ const createStyles = (theme, fontSizeMultiplier) =>
       fontWeight: '600',
       color: theme.colors.text,
       marginBottom: 8,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
     },
     input: {
       backgroundColor: theme.colors.card,
@@ -127,6 +145,7 @@ const createStyles = (theme, fontSizeMultiplier) =>
       fontSize: 16 * fontSizeMultiplier,
       color: theme.colors.text,
       minHeight: 48,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
     },
     submitButton: {
       backgroundColor: theme.colors.primary,
@@ -139,5 +158,6 @@ const createStyles = (theme, fontSizeMultiplier) =>
       color: '#fff',
       fontSize: 16 * fontSizeMultiplier,
       fontWeight: '600',
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
     },
   });

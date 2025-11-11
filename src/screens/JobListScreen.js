@@ -3,6 +3,8 @@ import { View, FlatList } from 'react-native';
 import CompanyCard from '../components/CompanyCard';
 import { jobListStyles } from '../styles/JobListStyles';
 import { ThemeContext } from '../../App';
+import { FontSizeContext } from '../utils/FontSizeContext';
+import { useDyslexic } from '../utils/DyslexicContext';
 
 const jobs = [
   { id: '1', name: 'TechWorks Solutions', rating: 4.5, field: 'IT Services' },
@@ -13,7 +15,9 @@ const jobs = [
 
 export default function JobListScreen({ navigation }) {
   const { currentTheme } = useContext(ThemeContext);
-  const styles = jobListStyles(currentTheme);
+  const { fontSizeMultiplier } = useContext(FontSizeContext);
+  const { dyslexicEnabled } = useDyslexic();
+  const styles = jobListStyles(currentTheme, fontSizeMultiplier, dyslexicEnabled);
 
   return (
     <View style={[styles.container, { backgroundColor: currentTheme.colors.background }]}> 

@@ -3,16 +3,13 @@ import { registerRootComponent } from 'expo';
 import AppNavigator from './src/navigation';
 import { lightTheme, darkTheme } from './src/styles/theme';
 
-// Expo font loading
 import * as Font from 'expo-font';
 import AppLoading from 'expo-app-loading';
 
-// Context Providers
 import { TtsProvider } from './src/utils/TtsContext';
 import { FontSizeProvider } from './src/utils/FontSizeContext';
 import { DyslexicProvider } from './src/utils/DyslexicContext';
 
-// Theme Context (Global)
 export const ThemeContext = createContext();
 
 function App() {
@@ -26,7 +23,7 @@ function App() {
 
   React.useEffect(() => {
     Font.loadAsync({
-      'OpenDyslexic': require('./assets/images/OpenDyslexic-Regular.otf'),
+      'OpenDyslexic': require('./assets/images/OpenDyslexic-Italic.otf'),
     }).then(() => setFontsLoaded(true));
   }, []);
 

@@ -103,8 +103,8 @@ const createStyles = (theme, fontSizeMultiplier, dyslexicEnabled) =>
   StyleSheet.create({
     modalContainer: {
       flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background for modal
-      justifyContent: 'flex-end', // Align modal content to bottom
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+      justifyContent: 'flex-end',
     },
     modalContent: {
       backgroundColor: theme.colors.background,

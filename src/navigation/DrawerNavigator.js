@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import HomeScreen from '../screens/tempHomeScreen';
-import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import CustomDrawer from '../components/CustomDrawer';
 import { ThemeContext } from '../../App';
@@ -73,14 +72,6 @@ export default function DrawerNavigator() {
         options={{
           drawerLabel: renderLabel('Home'),
           headerTitle: renderHeader('Home')
-        }}
-      />
-      <Drawer.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          drawerLabel: renderLabel('Profile'),
-          headerTitle: renderHeader('Profile')
         }}
       />
       <Drawer.Screen

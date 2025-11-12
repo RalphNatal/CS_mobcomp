@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 
 import InputField from '../components/InputField';
@@ -15,6 +16,7 @@ import { ThemeContext } from '../../App';
 import { FontSizeContext } from '../utils/FontSizeContext';
 import { useDyslexic } from '../utils/DyslexicContext';
 import SpeakableText from '../components/SpeakableText';
+import { validateLogin } from '../utils/UserStorage';
 
 /**
  * Creates styles dynamic to current theme, font size multiplier, and dyslexic mode
@@ -44,7 +46,7 @@ const createStyles = (theme, fontSizeMultiplier, dyslexicEnabled) =>
       fontWeight: dyslexicEnabled ? 'normal' : 'bold',
     },
     sub: {
-      color: theme.colors.text, // Ensures color fits dark/light mode
+      color: theme.colors.text,
       marginBottom: 14,
       fontSize: 14 * fontSizeMultiplier,
       fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
@@ -86,22 +88,51 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  // Validate input fields, populate error messages
+  // Validate input fields
   const validateForm = () => {
     let newErrors = {};
     if (!email) newErrors.email = 'Email is required';
     if (!password) newErrors.password = 'Password is required';
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !emailRegex.test(email)) {
+      newErrors.email = 'Invalid email format';
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handles login button press
-  const handleLogin = () => {
-    if (validateForm()) {
-      navigation.replace('Main');
-    } else {
-      Alert.alert('Error', 'Please fill in all required fields');
+  // Handles login button press with JSON validation
+  const handleLogin = async () => {
+    if (!validateForm()) {
+      Alert.alert('Validation Error', 'Please fill in all required fields correctly');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await validateLogin(email, password);
+      
+      if (result.success) {
+        Alert.alert('Success', `Welcome back, ${result.user.name}!`);
+        // Clear inputs
+        setEmail('');
+        setPassword('');
+        setErrors({});
+        // Navigate to main app
+        navigation.replace('Main');
+      } else {
+        Alert.alert('Login Failed', result.message);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'An unexpected error occurred');
+      console.error('Login error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -119,7 +150,7 @@ export default function LoginScreen({ navigation }) {
           Sign in to continue to Connex
         </SpeakableText>
 
-        {/* Email Input Field with dyslexic font and theme colors */}
+        {/* Email Input Field */}
         <InputField
           label={
             <SpeakableText
@@ -135,7 +166,10 @@ export default function LoginScreen({ navigation }) {
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(text) => {
+            setEmail(text);
+            if (errors.email) setErrors({ ...errors, email: '' });
+          }}
           error={errors.email}
           fontSizeMultiplier={fontSizeMultiplier}
         />
@@ -155,18 +189,25 @@ export default function LoginScreen({ navigation }) {
           }
           secureTextEntry
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(text) => {
+            setPassword(text);
+            if (errors.password) setErrors({ ...errors, password: '' });
+          }}
           error={errors.password}
           fontSizeMultiplier={fontSizeMultiplier}
         />
 
-        {/* Sign in Button */}
-        <PrimaryButton
-          title="Sign in"
-          onPress={handleLogin}
-          style={{ marginTop: 8 }}
-          fontSizeMultiplier={fontSizeMultiplier}
-        />
+        {/* Sign in Button with loading state */}
+        {loading ? (
+          <ActivityIndicator size="large" color={currentTheme.colors.primary} style={{ marginTop: 8 }} />
+        ) : (
+          <PrimaryButton
+            title="Sign in"
+            onPress={handleLogin}
+            style={{ marginTop: 8 }}
+            fontSizeMultiplier={fontSizeMultiplier}
+          />
+        )}
 
         {/* Navigation to Signup View */}
         <View style={styles.row}>

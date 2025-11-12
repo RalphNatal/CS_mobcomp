@@ -30,7 +30,7 @@ function App() {
   if (!fontsLoaded) return <AppLoading />;
 
   return (
-      <ThemeContext.Provider value={{ darkModeEnabled, setDarkModeEnabled, currentTheme }}>
+    <ThemeContext.Provider value={{ darkModeEnabled, setDarkModeEnabled, currentTheme }}>
       <DyslexicProvider>
         <FontSizeProvider>
           <TtsProvider>

@@ -1,7 +1,6 @@
-import React, { useContext } from 'react';
-import { View, Image, TouchableOpacity } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, Image, TouchableOpacity, Alert } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 // Contexts for theming, font size, dyslexic mode, and TTS
 import { ThemeContext } from '../../App';
@@ -10,6 +9,7 @@ import { useDyslexic } from '../utils/DyslexicContext';
 import { drawerStyles } from '../styles/DrawerStyles';
 import { useTts } from '../utils/TtsContext';
 import SpeakableText from '../components/SpeakableText';
+import { getCurrentUser, logout } from '../utils/UserStorage';
 
 export default function CustomDrawer(props) {
   // Get theme, font scaling, dyslexic enabled value, styles, and TTS controls from respective contexts
@@ -18,6 +18,70 @@ export default function CustomDrawer(props) {
   const { dyslexicEnabled } = useDyslexic();
   const styles = drawerStyles(currentTheme, dyslexicEnabled, fontSizeMultiplier);
   const { ttsEnabled } = useTts();
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // Load current user on mount
+  React.useEffect(() => {
+    loadCurrentUser();
+  }, []);
+
+  const loadCurrentUser = async () => {
+    try {
+      const user = await getCurrentUser();
+      setCurrentUser(user);
+    } catch (error) {
+      console.error('Error loading user:', error);
+    }
+  };
+
+  const handleResumePress = async () => {
+    try {
+      const user = await getCurrentUser();
+      if (user) {
+        // Navigate to ResumeScreen without company parameter (since it's from drawer)
+        props.navigation.navigate('ResumeScreen', { company: { name: 'Your Profile' } });
+      } else {
+        Alert.alert('Error', 'Please login first');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to open resume');
+    }
+  };
+
+  const handleLogout = async () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: 'Logout',
+          onPress: async () => {
+            setLoading(true);
+            try {
+              const result = await logout();
+              if (result.success) {
+                // Navigate to Login screen
+                props.navigation.navigate('Login');
+              } else {
+                Alert.alert('Error', result.message);
+              }
+            } catch (error) {
+              Alert.alert('Error', 'Failed to logout');
+            } finally {
+              setLoading(false);
+            }
+          },
+          style: 'destructive',
+        },
+      ]
+    );
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: currentTheme.colors.background }}>
@@ -38,14 +102,14 @@ export default function CustomDrawer(props) {
             style={[
               styles.profileName,
               {
-                color: currentTheme.colors.onPrimary,
+                color: currentTheme.colors.onPrimary || '#fff',
                 fontSize: 18 * fontSizeMultiplier,
                 fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
               },
             ]}
             ttsEnabled={ttsEnabled}
           >
-            John Doe
+            {currentUser?.name || 'User'}
           </SpeakableText>
           
           {/* Email display with dyslexic font and TTS */}
@@ -53,14 +117,14 @@ export default function CustomDrawer(props) {
             style={[
               styles.profileEmail,
               {
-                color: currentTheme.colors.onPrimary,
+                color: currentTheme.colors.onPrimary || '#fff',
                 fontSize: 14 * fontSizeMultiplier,
                 fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
               },
             ]}
             ttsEnabled={ttsEnabled}
           >
-            johndoe@email.com
+            {currentUser?.email || 'Not logged in'}
           </SpeakableText>
         </View>
 
@@ -70,37 +134,74 @@ export default function CustomDrawer(props) {
         </View>
       </DrawerContentScrollView>
 
-      {/* Logout Button Section */}
+      {/* Additional Menu Items Section */}
       <View
         style={[
-          styles.logoutSection,
+          styles.bottomMenuSection,
           {
             borderTopColor: currentTheme.colors.border || currentTheme.colors.muted,
             backgroundColor: currentTheme.colors.background,
           },
         ]}
       >
+        {/* Resume Button */}
         <TouchableOpacity
-          style={styles.logoutBtn}
-          onPress={() => alert('Logged out!')}  // Placeholder for logging out
+          style={styles.menuButton}
+          onPress={handleResumePress}
+          disabled={!currentUser}
         >
-          <Ionicons
-            name="log-out-outline"
-            size={20 * fontSizeMultiplier}
-            color={currentTheme.colors.primary}
-          />
+          <View style={styles.iconContainer}>
+            <SpeakableText style={styles.iconEmoji} ttsEnabled={ttsEnabled}>
+              📄
+            </SpeakableText>
+          </View>
           <SpeakableText
             style={[
-              styles.logoutSpeakableText,
+              styles.menuButtonText,
               {
-                color: currentTheme.colors.text,
-                fontSize: 14 * fontSizeMultiplier,
+                color: currentUser ? currentTheme.colors.text : currentTheme.colors.muted,
+                fontSize: 16 * fontSizeMultiplier,
                 fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
               },
             ]}
             ttsEnabled={ttsEnabled}
           >
-            Logout
+            My Resume
+          </SpeakableText>
+        </TouchableOpacity>
+
+        {/* Divider */}
+        <View
+          style={[
+            styles.divider,
+            { backgroundColor: currentTheme.colors.border || currentTheme.colors.muted },
+          ]}
+        />
+
+        {/* Logout Button - Full Width */}
+        <TouchableOpacity
+          style={[
+            styles.logoutButton,
+            {
+              backgroundColor: currentTheme.colors.primary,
+              opacity: loading ? 0.6 : 1,
+            },
+          ]}
+          onPress={handleLogout}
+          disabled={loading}
+        >
+          <SpeakableText
+            style={[
+              styles.logoutButtonText,
+              {
+                color: '#fff',
+                fontSize: 16 * fontSizeMultiplier,
+                fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
+              },
+            ]}
+            ttsEnabled={ttsEnabled}
+          >
+            {loading ? 'Logging out...' : 'Logout'}
           </SpeakableText>
         </TouchableOpacity>
       </View>

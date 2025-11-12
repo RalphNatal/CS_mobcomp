@@ -1,13 +1,22 @@
 import React, { useContext } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import HomeScreen from '../screens/tempHomeScreen';
-import SettingsScreen from '../screens/SettingsScreen';
-import CustomDrawer from '../components/CustomDrawer';
+import { Text } from 'react-native';
 import { ThemeContext } from '../../App';
+import { FontSizeContext } from '../utils/FontSizeContext';
 import { useDyslexic } from '../utils/DyslexicContext';
 import { useTts } from '../utils/TtsContext';
-import { FontSizeContext } from '../utils/FontSizeContext';
+
 import SpeakableText from '../components/SpeakableText';
+import CustomDrawer from '../components/CustomDrawer';
+
+// Screens
+import tempHomeScreen from '../screens/tempHomeScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import JobSearchScreen from '../screens/JobSearch';
+import CategoryScreen from '../screens/CategoryScreen';
+import CompanyDetailsScreen from '../screens/CompanyDetailsScreen';
+import ResumeScreen from '../screens/ResumeScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -15,7 +24,7 @@ export default function DrawerNavigator() {
   const { currentTheme } = useContext(ThemeContext);
   const { dyslexicEnabled } = useDyslexic();
   const { ttsEnabled } = useTts();
-  const { fontSizeMultiplier, setFontSizeMultiplier } = useContext(FontSizeContext);
+  const { fontSizeMultiplier } = useContext(FontSizeContext);
 
   // Custom drawer labels with TTS and dyslexic font
   const renderLabel = (label) => (props) => (
@@ -54,7 +63,6 @@ export default function DrawerNavigator() {
           dyslexicEnabled={dyslexicEnabled}
           ttsEnabled={ttsEnabled}
           fontSizeMultiplier={fontSizeMultiplier}
-          setFontSizeMultiplier={setFontSizeMultiplier}
         />
       )}
       screenOptions={{
@@ -68,10 +76,46 @@ export default function DrawerNavigator() {
     >
       <Drawer.Screen
         name="Home"
-        component={HomeScreen}
+        component={tempHomeScreen}
         options={{
           drawerLabel: renderLabel('Home'),
-          headerTitle: renderHeader('Home')
+          headerTitle: renderHeader('Home'),
+          drawerIcon: ({ color, size }) => (
+            <Text style={{ fontSize: size, color }}>🏠</Text>
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          drawerLabel: renderLabel('Profile'),
+          headerTitle: renderHeader('Profile'),
+          drawerIcon: ({ color, size }) => (
+            <Text style={{ fontSize: size, color }}>👤</Text>
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="JobSearch"
+        component={JobSearchScreen}
+        options={{
+          drawerLabel: renderLabel('Job Search'),
+          headerTitle: renderHeader('Job Search'),
+          drawerIcon: ({ color, size }) => (
+            <Text style={{ fontSize: size, color }}>🔍</Text>
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="CategoryScreenDrawer"
+        component={CategoryScreen}
+        options={{
+          drawerLabel: renderLabel('Browse Categories'),
+          headerTitle: renderHeader('Browse Categories'),
+          drawerIcon: ({ color, size }) => (
+            <Text style={{ fontSize: size, color }}>📂</Text>
+          ),
         }}
       />
       <Drawer.Screen
@@ -79,7 +123,10 @@ export default function DrawerNavigator() {
         component={SettingsScreen}
         options={{
           drawerLabel: renderLabel('Settings'),
-          headerTitle: renderHeader('Settings')
+          headerTitle: renderHeader('Settings'),
+          drawerIcon: ({ color, size }) => (
+            <Text style={{ fontSize: size, color }}>⚙️</Text>
+          ),
         }}
       />
     </Drawer.Navigator>

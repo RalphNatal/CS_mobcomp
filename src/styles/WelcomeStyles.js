@@ -2,7 +2,7 @@ import { StyleSheet, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
-export const welcomeStyles = (theme) => StyleSheet.create({
+export const welcomeStyles = (theme, dyslexicEnabled = false) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
@@ -10,14 +10,8 @@ export const welcomeStyles = (theme) => StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  gradient: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  circle: {
-    position: 'absolute',
-    borderRadius: 999,
-    opacity: 0.15,
-  },
+  gradient: { ...StyleSheet.absoluteFillObject },
+  circle: { position: 'absolute', borderRadius: 999, opacity: 0.15 },
   circle1: {
     width: width * 0.8,
     height: width * 0.8,
@@ -47,14 +41,16 @@ export const welcomeStyles = (theme) => StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    fontWeight: '700',
     color: theme.colors.text,
     textAlign: 'center',
+    fontFamily: dyslexicEnabled ? 'OpenDyslexic' : (theme.fontFamily || 'System'),
+    fontWeight: dyslexicEnabled ? 'normal' : 'bold',
   },
   subtitle: {
     textAlign: 'center',
     color: theme.colors.muted,
     marginTop: 8,
     marginHorizontal: theme.spacing.m,
+    fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
   },
 });

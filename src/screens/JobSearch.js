@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import {
   View,
-  Text,
   TextInput,
   FlatList,
   TouchableOpacity,
@@ -10,9 +9,11 @@ import {
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { ThemeContext } from '../../App';
 import { FontSizeContext } from '../utils/FontSizeContext';
+import { useDyslexic } from '../utils/DyslexicContext';
 import SpeakableText from '../components/SpeakableText';
+import { useTts } from '../utils/TtsContext';
 
-const styles = (theme, fontSizeMultiplier) =>
+const styles = (theme, fontSizeMultiplier, dyslexicEnabled) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -42,6 +43,7 @@ const styles = (theme, fontSizeMultiplier) =>
       marginLeft: 8,
       fontSize: 16 * fontSizeMultiplier,
       color: theme.colors.text,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
     },
     listContainer: {
       padding: 16,
@@ -75,11 +77,7 @@ const styles = (theme, fontSizeMultiplier) =>
       fontWeight: '600',
       color: theme.colors.text,
       marginBottom: 4,
-    },
-    categoryText: {
-      fontSize: 14 * fontSizeMultiplier,
-      color: theme.colors.muted,
-      marginBottom: 4,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
     },
     statsRow: {
       flexDirection: 'row',
@@ -89,6 +87,7 @@ const styles = (theme, fontSizeMultiplier) =>
     jobCount: {
       fontSize: 14 * fontSizeMultiplier,
       color: theme.colors.primary,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
     },
     ratingContainer: {
       flexDirection: 'row',
@@ -98,22 +97,30 @@ const styles = (theme, fontSizeMultiplier) =>
       marginLeft: 4,
       fontSize: 14 * fontSizeMultiplier,
       color: theme.colors.muted,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
     },
     noResults: {
       textAlign: 'center',
       color: theme.colors.muted,
       marginTop: 20,
       fontSize: 16 * fontSizeMultiplier,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
     },
   });
 
 export default function JobSearchScreen({ navigation }) {
+  // Context hooks for theming, font size, dyslexic font, and TTS
   const { currentTheme } = useContext(ThemeContext);
   const { fontSizeMultiplier } = useContext(FontSizeContext);
-  const combinedStyles = styles(currentTheme, fontSizeMultiplier);
+  const { dyslexicEnabled } = useDyslexic();
+  const { ttsEnabled } = useTts();
+
+  const combinedStyles = styles(currentTheme, fontSizeMultiplier, dyslexicEnabled);
+
+  // Search state
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Dummy companies data
+  // Dummy companies data 
   const allCompanies = [
   { name: 'TechCorp Solutions', jobs: 12, rating: 4.5 },
       { name: 'Digital Innovations', jobs: 8, rating: 4.2 },
@@ -193,13 +200,14 @@ export default function JobSearchScreen({ navigation }) {
       { name: 'Market Leaders', jobs: 13, rating: 4.5 },
       { name: 'Digital Pro', jobs: 18, rating: 4.8 },
       { name: 'Brand Masters', jobs: 10, rating: 4.4 }
-
   ];
 
+  // Filter companies based on search query, make case-insensitive
   const filteredCompanies = allCompanies.filter(company =>
     company.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Render function for a company card
   const renderCompany = ({ item }) => (
     <TouchableOpacity
       style={combinedStyles.companyCard}
@@ -210,12 +218,18 @@ export default function JobSearchScreen({ navigation }) {
         <MaterialIcons name="business" size={24 * fontSizeMultiplier} color={currentTheme.colors.primary} />
       </View>
       <View style={combinedStyles.companyInfo}>
-        <SpeakableText style={combinedStyles.companyName}>{item.name}</SpeakableText>
+        <SpeakableText style={combinedStyles.companyName} ttsEnabled={ttsEnabled}>
+          {item.name}
+        </SpeakableText>
         <View style={combinedStyles.statsRow}>
-          <SpeakableText style={combinedStyles.jobCount}>{item.jobs} jobs</SpeakableText>
+          <SpeakableText style={combinedStyles.jobCount} ttsEnabled={ttsEnabled}>
+            {item.jobs} jobs
+          </SpeakableText>
           <View style={combinedStyles.ratingContainer}>
             <Ionicons name="star" size={16 * fontSizeMultiplier} color="#FFD700" />
-            <SpeakableText style={combinedStyles.ratingText}>{item.rating}</SpeakableText>
+            <SpeakableText style={combinedStyles.ratingText} ttsEnabled={ttsEnabled}>
+              {item.rating}
+            </SpeakableText>
           </View>
         </View>
       </View>
@@ -224,6 +238,7 @@ export default function JobSearchScreen({ navigation }) {
 
   return (
     <View style={combinedStyles.container}>
+      {/* Header with back button and title */}
       <View style={combinedStyles.header}>
         <TouchableOpacity
           style={combinedStyles.backButton}
@@ -231,10 +246,21 @@ export default function JobSearchScreen({ navigation }) {
         >
           <Ionicons name="arrow-back" size={22 * fontSizeMultiplier} color={currentTheme.colors.primary} />
         </TouchableOpacity>
-        <SpeakableText style={{ fontSize: 18 * fontSizeMultiplier, fontWeight: 'bold', color: currentTheme.colors.text, marginLeft: 10 }}>
+        <SpeakableText
+          style={{
+            fontSize: 18 * fontSizeMultiplier,
+            fontWeight: dyslexicEnabled ? 'normal' : 'bold',
+            color: currentTheme.colors.text,
+            marginLeft: 10,
+            fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
+          }}
+          ttsEnabled={ttsEnabled}
+        >
           Job Search
         </SpeakableText>
       </View>
+
+      {/* Search input */}
       <View style={combinedStyles.searchContainer}>
         <Ionicons name="search" size={20 * fontSizeMultiplier} color={currentTheme.colors.muted} />
         <TextInput
@@ -245,14 +271,18 @@ export default function JobSearchScreen({ navigation }) {
           onChangeText={setSearchQuery}
         />
       </View>
+
+      {/* Render company list or no-results message */}
       <View style={combinedStyles.listContainer}>
         {filteredCompanies.length === 0 ? (
-          <SpeakableText style={combinedStyles.noResults}>No companies found.</SpeakableText>
+          <SpeakableText style={combinedStyles.noResults} ttsEnabled={ttsEnabled}>
+            No companies found.
+          </SpeakableText>
         ) : (
           <FlatList
             data={filteredCompanies}
             renderItem={renderCompany}
-            keyExtractor={item => item.id}
+            keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
           />
         )}

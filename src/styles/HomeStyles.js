@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-export const homeStyles = (theme) => StyleSheet.create({
+export const homeStyles = (theme, fontSizeMultiplier = 1, dyslexicEnabled = false) => StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
@@ -9,15 +9,17 @@ export const homeStyles = (theme) => StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 24 * fontSizeMultiplier,
     color: theme.colors.text,
     marginBottom: 8,
+    fontFamily: dyslexicEnabled ? 'OpenDyslexic' : (theme.fontFamily || 'System'),
+    fontWeight: dyslexicEnabled ? 'normal' : 'bold',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 16 * fontSizeMultiplier,
     color: theme.colors.muted,
     marginBottom: 16,
+    fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -30,8 +32,9 @@ export const homeStyles = (theme) => StyleSheet.create({
   searchInput: {
     flex: 1,
     marginLeft: 8,
-    fontSize: 16,
+    fontSize: 16 * fontSizeMultiplier,
     color: theme.colors.text,
+    fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
   },
   searchButton: {
     backgroundColor: theme.colors.primary,
@@ -42,6 +45,8 @@ export const homeStyles = (theme) => StyleSheet.create({
   searchButtonText: {
     color: '#fff',
     fontWeight: '600',
+    fontSize: 15 * fontSizeMultiplier,
+    fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
   },
   statsContainer: {
     flexDirection: 'row',
@@ -57,20 +62,23 @@ export const homeStyles = (theme) => StyleSheet.create({
     alignItems: 'center',
   },
   statNumber: {
-    fontSize: 20,
+    fontSize: 22 * fontSizeMultiplier,
     fontWeight: 'bold',
     color: theme.colors.primary,
+    fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
   },
   statLabel: {
-    fontSize: 14,
+    fontSize: 14 * fontSizeMultiplier,
     color: theme.colors.muted,
     marginTop: 4,
+    fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 18 * fontSizeMultiplier,
     color: theme.colors.text,
     marginBottom: 16,
+    fontFamily: dyslexicEnabled ? 'OpenDyslexic' : (theme.fontFamily || 'System'),
+    fontWeight: dyslexicEnabled ? 'normal' : 'bold',
   },
   categoriesContainer: {
     flexDirection: 'row',
@@ -93,10 +101,11 @@ export const homeStyles = (theme) => StyleSheet.create({
   },
   categoryName: {
     marginTop: 8,
-    fontSize: 16,
+    fontSize: 14 * fontSizeMultiplier,
     fontWeight: '600',
     color: theme.colors.text,
     textAlign: 'center',
+    fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
   },
   stepsContainer: {
     flexDirection: 'row',
@@ -114,8 +123,9 @@ export const homeStyles = (theme) => StyleSheet.create({
   },
   stepText: {
     marginTop: 8,
-    fontSize: 14,
+    fontSize: 15 * fontSizeMultiplier,
     color: theme.colors.text,
     textAlign: 'center',
+    fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
   },
 });

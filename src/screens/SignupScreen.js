@@ -1,11 +1,15 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import InputField from '../components/InputField';
 import PrimaryButton from '../components/PrimaryButton';
 import { ThemeContext } from '../../App';
 import { FontSizeContext } from '../utils/FontSizeContext';
+import { useDyslexic } from '../utils/DyslexicContext';
+import { useTts } from '../utils/TtsContext';
+import SpeakableText from '../components/SpeakableText';
 
-const createStyles = (theme, fontSizeMultiplier) =>
+// Create styles based on theme, font size multiplier, and dyslexic font setting
+const createStyles = (theme, fontSizeMultiplier, dyslexicEnabled) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -15,40 +19,103 @@ const createStyles = (theme, fontSizeMultiplier) =>
     },
     heading: {
       fontSize: 22 * fontSizeMultiplier,
-      fontWeight: '700',
       marginBottom: 20,
       color: theme.colors.text,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : (theme.fontFamily || 'System'),
+      fontWeight: dyslexicEnabled ? 'normal' : 'bold',
     },
     terms: {
       textAlign: 'center',
       marginTop: 14,
       color: theme.colors.muted,
       fontSize: 12 * fontSizeMultiplier,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : (theme.fontFamily || 'System'),
     },
   });
 
 export default function SignupScreen({ navigation }) {
+  // Get theme, fontSizeMultiplier, dyslexic flag, and TTS enablement
   const { currentTheme } = useContext(ThemeContext);
   const { fontSizeMultiplier } = useContext(FontSizeContext);
-  const styles = createStyles(currentTheme, fontSizeMultiplier);
+  const { dyslexicEnabled } = useDyslexic();
+  const { ttsEnabled } = useTts();
+
+  const styles = createStyles(currentTheme, fontSizeMultiplier, dyslexicEnabled);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Create your account</Text>
+      {/* Header with SpeakableText for TTS and dyslexic font */}
+      <SpeakableText
+        style={styles.heading}
+        ttsEnabled={ttsEnabled}
+      >
+        Create your account
+      </SpeakableText>
 
-      <InputField label="Full name" fontSizeMultiplier={fontSizeMultiplier} />
-      <InputField label="Email" keyboardType="email-address" fontSizeMultiplier={fontSizeMultiplier} />
-      <InputField label="Password" secureTextEntry fontSizeMultiplier={fontSizeMultiplier} />
+      {/* Full name field label uses SpeakableText for dyslexic font and TTS */}
+      <InputField
+        label={
+          <SpeakableText
+            style={{
+              fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
+              fontSize: 16 * fontSizeMultiplier,
+              color: currentTheme.colors.text,
+            }}
+            ttsEnabled={ttsEnabled}
+          >
+            Full name
+          </SpeakableText>
+        }
+        fontSizeMultiplier={fontSizeMultiplier}
+      />
 
+      {/* Email field label */}
+      <InputField
+        label={
+          <SpeakableText
+            style={{
+              fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
+              fontSize: 16 * fontSizeMultiplier,
+              color: currentTheme.colors.text,
+            }}
+            ttsEnabled={ttsEnabled}
+          >
+            Email
+          </SpeakableText>
+        }
+        keyboardType="email-address"
+        fontSizeMultiplier={fontSizeMultiplier}
+      />
+
+      {/* Password field label */}
+      <InputField
+        label={
+          <SpeakableText
+            style={{
+              fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
+              fontSize: 16 * fontSizeMultiplier,
+              color: currentTheme.colors.text,
+            }}
+            ttsEnabled={ttsEnabled}
+          >
+            Password
+          </SpeakableText>
+        }
+        secureTextEntry
+        fontSizeMultiplier={fontSizeMultiplier}
+      />
+
+      {/* Create Account Button */}
       <PrimaryButton
         title="Create account"
         onPress={() => navigation.replace('Main')}
         fontSizeMultiplier={fontSizeMultiplier}
       />
 
-      <Text style={styles.terms}>
+      {/* Terms & Privacy Notice */}
+      <SpeakableText style={styles.terms} ttsEnabled={ttsEnabled}>
         By creating an account you agree to our Terms & Privacy.
-      </Text>
+      </SpeakableText>
     </View>
   );
 }

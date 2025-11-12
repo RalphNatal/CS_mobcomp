@@ -1,11 +1,25 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+} from 'react-native';
+
 import InputField from '../components/InputField';
 import PrimaryButton from '../components/PrimaryButton';
 import { ThemeContext } from '../../App';
 import { FontSizeContext } from '../utils/FontSizeContext';
+import { useDyslexic } from '../utils/DyslexicContext';
+import SpeakableText from '../components/SpeakableText';
 
-const createStyles = (theme, fontSizeMultiplier) =>
+/**
+ * Creates styles dynamic to current theme, font size multiplier, and dyslexic mode
+ */
+const createStyles = (theme, fontSizeMultiplier, dyslexicEnabled) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -24,14 +38,16 @@ const createStyles = (theme, fontSizeMultiplier) =>
     },
     heading: {
       fontSize: 22 * fontSizeMultiplier,
-      fontWeight: '700',
       marginBottom: 6,
       color: theme.colors.text,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
+      fontWeight: dyslexicEnabled ? 'normal' : 'bold',
     },
     sub: {
-      color: theme.colors.muted,
+      color: theme.colors.text, // Ensures color fits dark/light mode
       marginBottom: 14,
       fontSize: 14 * fontSizeMultiplier,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
     },
     row: {
       flexDirection: 'row',
@@ -39,30 +55,39 @@ const createStyles = (theme, fontSizeMultiplier) =>
       marginTop: 16,
     },
     small: {
-      color: theme.colors.muted,
+      color: theme.colors.text,
       fontSize: 14 * fontSizeMultiplier,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
     },
     link: {
       color: theme.colors.primary,
       fontWeight: '600',
       fontSize: 14 * fontSizeMultiplier,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
     },
     errorText: {
       color: 'red',
       fontSize: 12 * fontSizeMultiplier,
       marginTop: 4,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
     },
   });
 
 export default function LoginScreen({ navigation }) {
+  // Get theming and accessibility contexts
   const { currentTheme } = useContext(ThemeContext);
   const { fontSizeMultiplier } = useContext(FontSizeContext);
-  const styles = createStyles(currentTheme, fontSizeMultiplier);
+  const { dyslexicEnabled } = useDyslexic();
+  
+  // Generate styles based on current theme, font size, and font preferences
+  const styles = createStyles(currentTheme, fontSizeMultiplier, dyslexicEnabled);
 
+  // State for input fields and errors
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
 
+  // Validate input fields, populate error messages
   const validateForm = () => {
     let newErrors = {};
     if (!email) newErrors.email = 'Email is required';
@@ -71,6 +96,7 @@ export default function LoginScreen({ navigation }) {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Handles login button press
   const handleLogin = () => {
     if (validateForm()) {
       navigation.replace('Main');
@@ -80,13 +106,32 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
       <View style={styles.card}>
-        <Text style={styles.heading}>Welcome back</Text>
-        <Text style={styles.sub}>Sign in to continue to Connex</Text>
+        {/* Heading and subtitle with dyslexic font and TTS support */}
+        <SpeakableText style={styles.heading} ttsEnabled>
+          Welcome back
+        </SpeakableText>
+        <SpeakableText style={styles.sub} ttsEnabled>
+          Sign in to continue to Connex
+        </SpeakableText>
 
+        {/* Email Input Field with dyslexic font and theme colors */}
         <InputField
-          label="Email"
+          label={
+            <SpeakableText
+              style={{
+                fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
+                fontSize: 16 * fontSizeMultiplier,
+                color: currentTheme.colors.text,
+              }}
+            >
+              Email
+            </SpeakableText>
+          }
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
@@ -94,8 +139,20 @@ export default function LoginScreen({ navigation }) {
           error={errors.email}
           fontSizeMultiplier={fontSizeMultiplier}
         />
+
+        {/* Password Input Field */}
         <InputField
-          label="Password"
+          label={
+            <SpeakableText
+              style={{
+                fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
+                fontSize: 16 * fontSizeMultiplier,
+                color: currentTheme.colors.text,
+              }}
+            >
+              Password
+            </SpeakableText>
+          }
           secureTextEntry
           value={password}
           onChangeText={setPassword}
@@ -103,12 +160,19 @@ export default function LoginScreen({ navigation }) {
           fontSizeMultiplier={fontSizeMultiplier}
         />
 
-        <PrimaryButton title="Sign in" onPress={handleLogin} style={{ marginTop: 8 }} fontSizeMultiplier={fontSizeMultiplier} />
+        {/* Sign in Button */}
+        <PrimaryButton
+          title="Sign in"
+          onPress={handleLogin}
+          style={{ marginTop: 8 }}
+          fontSizeMultiplier={fontSizeMultiplier}
+        />
 
+        {/* Navigation to Signup View */}
         <View style={styles.row}>
-          <Text style={styles.small}>Don't have an account?</Text>
+          <SpeakableText style={styles.small}>Don't have an account?</SpeakableText>
           <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-            <Text style={styles.link}> Create one</Text>
+            <SpeakableText style={styles.link}> Create one</SpeakableText>
           </TouchableOpacity>
         </View>
       </View>

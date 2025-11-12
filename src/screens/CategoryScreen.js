@@ -3,9 +3,12 @@ import { View, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ThemeContext } from '../../App';
 import { FontSizeContext } from '../utils/FontSizeContext';
+import { useDyslexic } from '../utils/DyslexicContext';
 import SpeakableText from '../components/SpeakableText';
+import { useTts } from '../utils/TtsContext';
 
-const categoryStyles = (theme, fontSizeMultiplier) =>
+// Styles with theming, dyslexic font, and font scaling
+const categoryStyles = (theme, fontSizeMultiplier = 1, dyslexicEnabled = false) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -25,11 +28,13 @@ const categoryStyles = (theme, fontSizeMultiplier) =>
       fontSize: 24 * fontSizeMultiplier,
       fontWeight: 'bold',
       color: theme.colors.text,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
     },
     subtitle: {
       fontSize: 14 * fontSizeMultiplier,
       color: theme.colors.muted,
       marginTop: 4,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
     },
     companiesList: {
       padding: 16,
@@ -63,6 +68,7 @@ const categoryStyles = (theme, fontSizeMultiplier) =>
       fontWeight: '600',
       color: theme.colors.text,
       marginBottom: 4,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
     },
     companyStats: {
       flexDirection: 'row',
@@ -72,6 +78,7 @@ const categoryStyles = (theme, fontSizeMultiplier) =>
     statsText: {
       fontSize: 14 * fontSizeMultiplier,
       color: theme.colors.muted,
+      fontFamily: dyslexicEnabled ? 'OpenDyslexic' : theme.fontFamily || 'System',
     },
     ratingContainer: {
       flexDirection: 'row',
@@ -83,9 +90,16 @@ const categoryStyles = (theme, fontSizeMultiplier) =>
 export default function CategoryScreen({ route, navigation }) {
   const { currentTheme } = useContext(ThemeContext);
   const { fontSizeMultiplier } = useContext(FontSizeContext);
-  const styles = categoryStyles(currentTheme, fontSizeMultiplier);
+  const { dyslexicEnabled } = useDyslexic();
+  const { ttsEnabled } = useTts();
 
+  // Generate styles based on context
+  const styles = categoryStyles(currentTheme, fontSizeMultiplier, dyslexicEnabled);
+
+  // Category name passed via route params, default to 'Category'
   const { category } = route.params || { category: 'Category' };
+
+  // Companies data categorized by category names
   const companiesData = {
     'IT & Software': [
       { name: 'TechCorp Solutions', jobs: 12, rating: 4.5 },
@@ -178,21 +192,41 @@ export default function CategoryScreen({ route, navigation }) {
       { name: 'Brand Masters', jobs: 10, rating: 4.4 }
     ],
   };
-  
+
   const companies = companiesData[category] || [];
 
   return (
     <View style={styles.container}>
+      {/* Header with back button and category metadata */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <MaterialIcons name="arrow-back" size={24 * fontSizeMultiplier} color={currentTheme.colors.text} />
+          <MaterialIcons
+            name="arrow-back"
+            size={24 * fontSizeMultiplier}
+            color={currentTheme.colors.text}
+          />
         </TouchableOpacity>
-        <SpeakableText style={styles.headerTitle}>{category}</SpeakableText>
-        <SpeakableText style={styles.subtitle}>{companies.length} Companies</SpeakableText>
+
+        {/* Category Title */}
+        <SpeakableText style={{
+          fontSize: 24 * fontSizeMultiplier,
+          fontFamily: dyslexicEnabled ? 'OpenDyslexic' : undefined,
+          fontWeight: dyslexicEnabled ? 'normal' : 'bold',
+          color: currentTheme.colors.text,
+        }} ttsEnabled={ttsEnabled}>
+          {category}
+        </SpeakableText>
+
+        {/* Number of companies subtitle */}
+        <SpeakableText style={styles.subtitle} ttsEnabled={ttsEnabled}>
+          {companies.length} Companies
+        </SpeakableText>
       </View>
+
+      {/* Scrollable companies list */}
       <ScrollView style={styles.companiesList}>
         {companies.map((company, index) => (
           <TouchableOpacity
@@ -200,16 +234,35 @@ export default function CategoryScreen({ route, navigation }) {
             style={styles.companyCard}
             onPress={() => navigation.navigate('JobDetails', { company, category })}
           >
+            {/* Company icon */}
             <View style={styles.companyIcon}>
-              <MaterialIcons name="business" size={24 * fontSizeMultiplier} color={currentTheme.colors.primary} />
+              <MaterialIcons
+                name="business"
+                size={24 * fontSizeMultiplier}
+                color={currentTheme.colors.primary}
+              />
             </View>
+
+            {/* Company info with name and stats */}
             <View style={styles.companyInfo}>
-              <SpeakableText style={styles.companyName}>{company.name}</SpeakableText>
+              <SpeakableText style={styles.companyName} ttsEnabled={ttsEnabled}>
+                {company.name}
+              </SpeakableText>
+
               <View style={styles.companyStats}>
-                <SpeakableText style={styles.statsText}>{company.jobs} open positions</SpeakableText>
+                <SpeakableText style={styles.statsText} ttsEnabled={ttsEnabled}>
+                  {company.jobs} open positions
+                </SpeakableText>
+
                 <View style={styles.ratingContainer}>
-                  <MaterialIcons name="star" size={16 * fontSizeMultiplier} color="#FFD700" />
-                  <SpeakableText style={styles.statsText}>{company.rating}</SpeakableText>
+                  <MaterialIcons
+                    name="star"
+                    size={16 * fontSizeMultiplier}
+                    color="#FFD700"
+                  />
+                  <SpeakableText style={styles.statsText} ttsEnabled={ttsEnabled}>
+                    {company.rating}
+                  </SpeakableText>
                 </View>
               </View>
             </View>

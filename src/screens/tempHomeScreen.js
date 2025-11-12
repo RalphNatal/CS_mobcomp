@@ -5,20 +5,29 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { ThemeContext } from '../../App';
-import { homeStyles } from '../styles/HomeStyles';
+import { FontSizeContext } from '../utils/FontSizeContext';
+import { useDyslexic } from '../utils/DyslexicContext';
+import SpeakableText from '../components/SpeakableText';
 import UploadSkillsScreen from './UploadSkillScreen';
 import { useTts } from '../utils/TtsContext';
-import SpeakableText from '../components/SpeakableText';
-import { FontSizeContext } from '../utils/FontSizeContext'; 
+import { homeStyles } from '../styles/HomeStyles';
 
 export default function tempHomeScreen({ navigation }) {
+  // Contexts for theming, font sizing, dyslexic font toggle, and text to speech
   const { currentTheme } = useContext(ThemeContext);
   const { fontSizeMultiplier } = useContext(FontSizeContext);
-  const styles = homeStyles(currentTheme, fontSizeMultiplier);
-  const { speak } = useTts();
+  const { dyslexicEnabled } = useDyslexic();
+  const { ttsEnabled } = useTts();
+  
+  // Styles adjusted for current theme and accessibility settings
+  const styles = homeStyles(currentTheme, fontSizeMultiplier, dyslexicEnabled);
 
+  // State to control visibility of Upload Skills modal
+  const [skillsModalVisible, setSkillsModalVisible] = useState(false);
+  
+  // Static list of job categories with icons
   const categories = [
     { name: 'IT & Software', icon: 'laptop' },
     { name: 'Construction', icon: 'engineering' },
@@ -27,9 +36,8 @@ export default function tempHomeScreen({ navigation }) {
     { name: 'Design', icon: 'brush' },
     { name: 'Marketing', icon: 'campaign' },
   ];
-
-  const [skillsModalVisible, setSkillsModalVisible] = useState(false);
-
+  
+  // Handles actions for the app steps triggered by UI interactions
   const handleStepClick = (step) => {
     switch (step) {
       case 'Create an Account':
@@ -42,59 +50,62 @@ export default function tempHomeScreen({ navigation }) {
         navigation.navigate('JobSearch');
         break;
       case 'Apply & Get Hired':
-        // Handle application process
+        // Implement application logic here
+        break;
+      default:
         break;
     }
   };
 
-  const scaleFontSize = (base) => base * fontSizeMultiplier;
-
   return (
     <View style={{ flex: 1, backgroundColor: currentTheme.colors.background }}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Hero Section */}
         <View style={styles.header}>
-          <SpeakableText style={[styles.title, { fontSize: scaleFontSize(24) }]}>
+          <SpeakableText style={styles.title} ttsEnabled={ttsEnabled}>
             Find a job that suits your skills
           </SpeakableText>
-          <SpeakableText style={[styles.subtitle, { fontSize: scaleFontSize(16) }]}>
+          <SpeakableText style={styles.subtitle} ttsEnabled={ttsEnabled}>
             Explore certified training and career opportunities.
           </SpeakableText>
+
+          {/* Search area */}
           <View style={styles.searchContainer}>
-            <Ionicons name="search" size={scaleFontSize(22)} color={currentTheme.colors.muted} />
+            <MaterialIcons name="search" size={styles.title.fontSize} color={currentTheme.colors.muted} />
             <TextInput
               placeholder="Search jobs, skills, or companies"
               placeholderTextColor={currentTheme.colors.muted}
-              style={[styles.searchInput, { fontSize: scaleFontSize(16) }]}
+              style={styles.searchInput}
             />
             <TouchableOpacity
               style={styles.searchButton}
               onPress={() => navigation.navigate('JobSearch')}
             >
-              <SpeakableText style={[styles.searchButtonText, { fontSize: scaleFontSize(15) }]}>
+              <SpeakableText style={styles.searchButtonText} ttsEnabled={ttsEnabled}>
                 Find Job
               </SpeakableText>
             </TouchableOpacity>
           </View>
         </View>
-        
+
         {/* Stats Section */}
         <View style={styles.statsContainer}>
           <View style={styles.statBox}>
-            <SpeakableText style={[styles.statNumber, { fontSize: scaleFontSize(22) }]}>1,245</SpeakableText>
-            <SpeakableText style={[styles.statLabel, { fontSize: scaleFontSize(14) }]}>Live Jobs</SpeakableText>
+            <SpeakableText style={styles.statNumber} ttsEnabled={ttsEnabled}>1,245</SpeakableText>
+            <SpeakableText style={styles.statLabel} ttsEnabled={ttsEnabled}>Live Jobs</SpeakableText>
           </View>
           <View style={styles.statBox}>
-            <SpeakableText style={[styles.statNumber, { fontSize: scaleFontSize(22) }]}>812</SpeakableText>
-            <SpeakableText style={[styles.statLabel, { fontSize: scaleFontSize(14) }]}>Companies</SpeakableText>
+            <SpeakableText style={styles.statNumber} ttsEnabled={ttsEnabled}>812</SpeakableText>
+            <SpeakableText style={styles.statLabel} ttsEnabled={ttsEnabled}>Companies</SpeakableText>
           </View>
           <View style={styles.statBox}>
-            <SpeakableText style={[styles.statNumber, { fontSize: scaleFontSize(22) }]}>4,321</SpeakableText>
-            <SpeakableText style={[styles.statLabel, { fontSize: scaleFontSize(14) }]}>Applicants</SpeakableText>
+            <SpeakableText style={styles.statNumber} ttsEnabled={ttsEnabled}>4,321</SpeakableText>
+            <SpeakableText style={styles.statLabel} ttsEnabled={ttsEnabled}>Applicants</SpeakableText>
           </View>
         </View>
 
         {/* Popular Categories */}
-        <SpeakableText style={[styles.sectionTitle, { fontSize: scaleFontSize(18) }]}>
+        <SpeakableText style={styles.sectionTitle} ttsEnabled={ttsEnabled}>
           Popular Categories
         </SpeakableText>
         <View style={styles.categoriesContainer}>
@@ -103,16 +114,14 @@ export default function tempHomeScreen({ navigation }) {
               key={index}
               style={styles.categoryCard}
               activeOpacity={0.8}
-              onPress={() =>
-                navigation.navigate('CategoryScreen', { category: cat.name })
-              }
+              onPress={() => navigation.navigate('CategoryScreen', { category: cat.name })}
             >
               <MaterialIcons
                 name={cat.icon}
-                size={scaleFontSize(28)}
+                size={28 * fontSizeMultiplier}
                 color={currentTheme.colors.primary}
               />
-              <SpeakableText style={[styles.categoryName, { fontSize: scaleFontSize(14) }]}>
+              <SpeakableText style={styles.categoryName} ttsEnabled={ttsEnabled}>
                 {cat.name}
               </SpeakableText>
             </TouchableOpacity>
@@ -120,7 +129,7 @@ export default function tempHomeScreen({ navigation }) {
         </View>
 
         {/* How Connex Works */}
-        <SpeakableText style={[styles.sectionTitle, { fontSize: scaleFontSize(18) }]}>
+        <SpeakableText style={styles.sectionTitle} ttsEnabled={ttsEnabled}>
           How Connex Works
         </SpeakableText>
         <View style={styles.stepsContainer}>
@@ -137,15 +146,17 @@ export default function tempHomeScreen({ navigation }) {
             >
               <MaterialIcons
                 name={item.icon}
-                size={scaleFontSize(28)}
+                size={28 * fontSizeMultiplier}
                 color={currentTheme.colors.accent}
               />
-              <SpeakableText style={[styles.stepText, { fontSize: scaleFontSize(15) }]}>
+              <SpeakableText style={styles.stepText} ttsEnabled={ttsEnabled}>
                 {item.step}
               </SpeakableText>
             </TouchableOpacity>
           ))}
         </View>
+
+        {/* Modal for Upload Skills */}
         <UploadSkillsScreen
           visible={skillsModalVisible}
           onClose={() => setSkillsModalVisible(false)}
